@@ -1,0 +1,40 @@
+.MODEL SMALL
+.STACK 100H
+
+.DATA 
+CR EQU 0DH
+LF EQU 0AH
+HW DB "Hello WORLD !! $"
+BW DB "Bye World !! $"
+
+.CODE
+MAIN PROC
+    ;DATA SEGMENT INITIALIZATION
+    MOV AX,@DATA
+    MOV DS, AX
+    
+    ;PRINTING THE FIRST LINE
+    LEA DX, HW
+    MOV AH, 9
+    INT 21H
+    
+    ;PRINTING NEW LINE
+    MOV DL, CR
+    MOV AH, 2
+    INT 21H 
+    MOV DL, LF
+    MOV AH, 2
+    INT 21H
+    
+    ;PRINTING THE 2ND LINE
+    LEA DX, BW
+    MOV AH, 9
+    INT 21H
+
+
+    ;DOS EXIT
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
