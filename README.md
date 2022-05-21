@@ -69,6 +69,7 @@ INT 21H
 - DW stands for define word. (2 byte)
 - `X DB 65` sets the value of X = 'A'
 - `Y DB ?` sets the value of Y undefined
+- 'Hello world!!$' is a string where each letter is 1 byte/2 bytes defined by DB/DW
 
 ```assembly
 HW DB 'Hello world!!$'
