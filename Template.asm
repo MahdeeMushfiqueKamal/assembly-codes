@@ -28,7 +28,6 @@ MAIN PROC
     MOV AH, 2
     INT 21H 
     MOV DL, LF
-    MOV AH, 2
     INT 21H
     
     ;PRINTING A CHARACTER
