@@ -13,7 +13,16 @@ ARR_I DW ?
 ARR DW 100 DUP(0)
 line1 DB "Enter N:  $" 
 line2 DB "Sorted Array:  $"   
-LINE3 DB "INSERTION SORT IS CALLED: $"
+LINE3 DB "Enter the number you are looking for (X for discard search): $"
+
+;binary search data
+X DW 8  
+L DW ?
+R DW ?
+MID DW ? 
+not_found_str DB "Not found $" 
+found_str DB "Found at $"          
+;binary search data ends
 
 .CODE
 MAIN PROC 
@@ -83,15 +92,97 @@ MAIN PROC
         JMP ARRAY_OUTPUT
     END_ARRAY_OUTPUT:    
     CALL NEWLINE  
+    CALL NEWLINE 
+    
+    STEP6:
+    ;TAKE INPUT FROM USER AND DO BINARY SEARCH 
+    LEA DX, line3
+    MOV AH, 9
+    INT 21H
+    
+    CALL INPUT_A_NUM
+    MOV X, BX
+    CALL NEWLINE 
+    
+    CMP X, 8H
+    JE END_STEP6
+    
+    CALL BINARY_SEARCH  
+    
+    JMP STEP6:
+    END_STEP6:
+    CALL NEWLINE 
     CALL NEWLINE
     JMP START   
-    
     END_PROGRAM:         
     ;DOS EXIT
     MOV AH, 4CH
     INT 21H
 
 MAIN ENDP 
+
+BINARY_SEARCH PROC
+    ; L=0, R = N-1
+    MOV L, 0
+    MOV CX, N
+    DEC CX
+    MOV R, CX
+    
+    SEARCH:        
+        ;MID = (L+R)/2
+        XOR CX, CX
+        ADD CX, L
+        ADD CX, R
+        SHR CX , 1 
+        MOV MID, CX  
+        
+        SHL CX, 1
+        MOV SI, 0 
+        ADD SI, CX
+        
+        ; EXIT CASE 
+        MOV CX, R
+        CMP L,CX
+        JG NOT_FOUND 
+        
+        MOV CX, X
+        CMP CX,ARR[SI]
+        JE FOUND
+        JL LEFT
+        JG RIGHT
+        
+    LEFT:  
+        MOV CX, MID
+        DEC CX
+        MOV R, CX
+        JMP SEARCH
+    
+    RIGHT:        
+        MOV CX, MID
+        INC CX
+        MOV L, CX
+        JMP SEARCH
+         
+    
+    FOUND: 
+        ;PRINTING THE FIRST LINE
+        LEA DX, FOUND_STR
+        MOV AH, 9
+        INT 21H  
+        
+        MOV AX, MID
+        CALL PRINT_DIGITS 
+        CALL NEWLINE 
+        JMP END_SEARCH
+    
+    NOT_FOUND:
+        LEA DX, not_found_str
+        MOV AH, 9
+        INT 21H 
+        CALL NEWLINE    
+    END_SEARCH:
+    RET
+BINARY_SEARCH ENDP 
 
 ;INSERTION SORT
 INSERTION_SORT PROC   
