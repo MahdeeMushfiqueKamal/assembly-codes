@@ -5,11 +5,15 @@
 CR EQU 0DH
 LF EQU 0AH     
 N DW ?  
-I DW ?
-IS_NEGATIVE DB ?  
+I DW ? 
+J DW ?
+KEY DW ?
+IS_NEGATIVE DB ?   
+ARR_I DW ?
 ARR DW 100 DUP(0)
 line1 DB "Enter N:  $" 
-line2 DB "Sorted Array:  $"
+line2 DB "Sorted Array:  $"   
+LINE3 DB "INSERTION SORT IS CALLED: $"
 
 .CODE
 MAIN PROC 
@@ -51,6 +55,8 @@ MAIN PROC
         JMP ARRAY_INPUT
     END_ARRAY_INPUT:    
     
+    CALL INSERTION_SORT
+    
     ;OUTPUTTING the array
     ;PRINTING THE 2ND LINE
     LEA DX, line2
@@ -86,6 +92,86 @@ MAIN PROC
     INT 21H
 
 MAIN ENDP 
+
+;INSERTION SORT
+INSERTION_SORT PROC   
+    MOV SI, 0  
+    MOV J, 1
+    OUTER_LOOP:
+        ;EXIT CASE J==N : EXIT
+        MOV CX, N
+        CMP J,CX
+        JE END_OUTER_LOOP
+        ; INSIDE THE OUTER LOOP   
+        
+        ; KEY = A[J] 
+        MOV CX, J
+        SHL CX, 1
+        MOV SI, 0
+        ADD SI, CX 
+        MOV BX, ARR[SI]
+        MOV KEY, BX  
+        ;LEA SI, ARR        
+        MOV SI, 0
+        ; I = J -1 
+        MOV CX, J
+        DEC CX
+        MOV I, CX  
+        
+        INNER_WHILE_LOOP:  
+            CMP I,0
+            JL END_INNER_WHILE_LOOP
+            ;ARR[I] >= KEY : END WHILE
+            MOV CX, I
+            SHL CX, 1
+            ;LEA SI, ARR
+            MOV SI, 0
+            ADD SI, CX 
+            MOV BX, ARR[SI]  ; BX = ARR[I] 
+            CMP BX,KEY
+            JLE END_INNER_WHILE_LOOP
+            
+            ;INSIDE WHILE LOOP
+            MOV ARR_I, BX
+            ;ARR[I+1] = ARR[I]  
+            MOV CX, I
+            INC CX         ; CX = I+1
+            SHL CX, 1   
+            ;LEA SI, ARR
+            MOV SI, 0
+            ADD SI, CX  
+            MOV BX, ARR_i
+            MOV ARR[SI], BX 
+            
+            ; I = I -1 
+            MOV BX, I
+            DEC BX
+            MOV I, BX
+            
+            JMP INNER_WHILE_LOOP            
+            ;END WHILE             
+                        
+        
+        END_INNER_WHILE_LOOP:
+        ;BEFORE ENDING FOR LOOP
+        ; ARR[I+1] = KEY
+        MOV CX, I
+        INC CX         ; CX = I+1
+        SHL CX, 1  
+        ;LEA SI, ARR
+        MOV SI, 0
+        ADD SI, CX     
+        MOV BX, KEY
+        MOV ARR[SI], BX ; ARR[I+1] = KEY
+        
+        ; LAST E J BARABO
+        MOV CX, J
+        INC CX
+        MOV J, CX  
+        JMP OUTER_LOOP
+    END_OUTER_LOOP:
+    RET
+INSERTION_SORT ENDP     
 
 ; inputs a number to BX , uses AX, CX
 INPUT_A_NUM PROC
@@ -136,27 +222,6 @@ INPUT_A_NUM PROC
     END_INPUT_LOOP:
     RET
 INPUT_A_NUM ENDP
-
-
-;PRINTING NEW LINE PROCEDURE, USES DL, AH
-NEWLINE PROC    
-    MOV DL, CR
-    MOV AH, 2
-    INT 21H 
-    MOV DL, LF
-    INT 21H  
-    RET
-NEWLINE ENDP    
-
-;PRINTING SPACE
-SPACE PROC     
-    ;PRINTING A CHARACTER
-    MOV DL, ' '
-    MOV AH, 2
-    INT 21H 
-    RET
-SPACE ENDP    
-
 
 
 ;PRINT DIGITS OF AX  , USES CX,DX,BX
@@ -231,5 +296,24 @@ PRINT_DIGITS PROC
     EXIT:
     RET
 PRINT_DIGITS ENDP
+
+;PRINTING NEW LINE PROCEDURE, USES DL, AH
+NEWLINE PROC    
+    MOV DL, CR
+    MOV AH, 2
+    INT 21H 
+    MOV DL, LF
+    INT 21H  
+    RET
+NEWLINE ENDP    
+
+;PRINTING SPACE
+SPACE PROC     
+    ;PRINTING A CHARACTER
+    MOV DL, ' '
+    MOV AH, 2
+    INT 21H 
+    RET
+SPACE ENDP
     
 END MAIN
