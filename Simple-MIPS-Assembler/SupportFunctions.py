@@ -1,4 +1,4 @@
-from pickletools import read_uint1
+from math import *
 import sys
 def OppCodeConverter(ins):
     if ins == "add":
@@ -30,7 +30,7 @@ def OppCodeConverter(ins):
     elif ins == "beq":
         return "1111"
     elif ins == "bne":
-        return "0101"
+        return "1010"
     elif ins == "j":
         return "1100"
     else:
@@ -68,3 +68,22 @@ def ShamtRegisterConverter(token):
 
 
 # decimal to binary --> 
+def ConvertNumber(decNum):
+    isNeg = True if decNum[0]=='-' else False
+    if isNeg:
+        absNum = abs(int(decNum[1:]))
+        if(absNum) > 8:
+            print("Number",decNum,"is too large to be converted")
+            sys.exit()
+        absNum = 15 - absNum + 1
+        finalNum = bin(absNum).replace("0b", "")
+    else:
+        # positive number
+        finalNum = int(decNum)
+        if(finalNum) > 7:
+            print("Number",decNum,"is too large to be converted")
+            sys.exit()
+        finalNum = bin(finalNum).replace("0b", "")
+        while len(finalNum) < 4:
+            finalNum = "0"+finalNum
+    return finalNum

@@ -1,4 +1,5 @@
 #to run: python main.py input.mips output.txt
+from lib2to3.pgen2 import token
 import sys
 from SupportFunctions import *
 
@@ -49,13 +50,9 @@ for line in lines:
         if len(tokens) != 4:
             print("Invalid Syntax")
             sys.exit()
-        immdt = int(tokens[3])
-        immdt = bin(immdt).replace("0b", "")
-        while len(immdt) < 4:
-            immdt = "0"+immdt
 
         towrite = OppCodeConverter(instruction) + " " + RegisterConverter(tokens[2]) + " " + \
-                RegisterConverter(tokens[1])+" " + immdt
+                RegisterConverter(tokens[1])+" " + ConvertNumber(tokens[3])
         
 
     elif instruction in ["lw","sw"]:
@@ -83,7 +80,27 @@ for line in lines:
         addr = bin(addr).replace("0b", "")
         while len(addr) < 8:
             addr = "0"+addr
-        towrite = OppCodeConverter(instruction) + " " + addr + " 0000"
+        towrite = OppCodeConverter(instruction) + " " + addr[0:4] +" "+ addr[4:8] + " 0000"
+    
+    elif instruction == "push":
+        if len(tokens) != 2:
+            print("Invalid Syntax")
+            sys.exit()
+        reg = token[1]
+        # sw token 0($sp)
+        # eikhane likhte hobe
+        # subi $sp, $sp, 1
+        # eita likhte hobe
+
+    elif instruction == "pop":
+        if len(tokens) != 2:
+            print("Invalid Syntax")
+            sys.exit()
+        reg = token[1]
+        # addi $sp, $sp, 1
+        # lw token 0($sp)
+
+
     
     else:
         print("Could not process line: ",line)
